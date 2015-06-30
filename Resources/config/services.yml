@@ -1,0 +1,45 @@
+parameters:
+#    skcms_core.example.class: SKCMS\CoreBundle\Example
+
+services:
+    gedmo.listener.translatable:
+        class: Gedmo\Translatable\TranslatableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ @annotation_reader ] ]
+            - [ setDefaultLocale, [ %locale% ] ]
+            - [ setTranslationFallback, [ true ] ]
+    skcms.corebundle.manager.entity:
+        class: SKCMS\CoreBundle\Manager\EntityManager
+        arguments: [@doctrine.orm.default_entity_manager]
+        calls:
+            - [setContainer, [@service_container]]
+            - [setSecurity, [@security.context]]
+            
+    skcms_core_slugListener:
+        class: SKCMS\CoreBundle\Listener\SlugListener
+        arguments: [@service_container]
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+            
+    skcms_core.listsutils:
+        class: SKCMS\CoreBundle\Service\ListUtils
+        arguments: [@service_container]
+    
+    skcms_core.menuutils:
+        class: SKCMS\CoreBundle\Service\MenuUtils
+        arguments: [@service_container]
+    
+    skcms_core.contactinfos:
+        class: SKCMS\CoreBundle\Service\ContactInfos
+        arguments: [@service_container]
+    
+    skcms_core.slugutils:
+        class: SKCMS\CoreBundle\Service\SlugUtils
+        arguments: [@service_container]
+    
+        
+#    skcms_core.example:
+#        class: %skcms_core.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
