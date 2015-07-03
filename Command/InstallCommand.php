@@ -1,23 +1,43 @@
 <?php
 namespace SKCMS\CoreBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
+//use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+//use Symfony\Component\Console\Input\InputArgument;
+//use Symfony\Component\Console\Input\InputInterface;
+//use Symfony\Component\Console\Input\InputOption;
+//use Symfony\Component\Console\Output\OutputInterface;
+//use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
+
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Sensio\Bundle\GeneratorBundle\Generator\BundleGenerator;
+use Sensio\Bundle\GeneratorBundle\Manipulator\KernelManipulator;
+use Sensio\Bundle\GeneratorBundle\Manipulator\RoutingManipulator;
+use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
 /**
  * Description of SkizeEntity
  *
  * @author Jona
  */
-class InstallCommand extends ContainerAwareCommand
+class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCommand
 {
-    
+ 
+    private $config;
+    private $skConfig;
+    private $loader;
+    private $module_installed;
+    const CONFIG_PATH = '/../../../../../../app/config/config.yml';
+    const SECURITY_PATH = '/../../../../../../app/config/security.yml';
+
+
     protected function configure()
     {
         $this
-            ->setName('skcms:configure')
+            ->setName('skcms:install')
             ->setDescription('Set extends for entity, its repository and type')
 //            ->addArgument('name', InputArgument::REQUIRED, 'Wich entity would you skize')
 //            ->addOption('yell', null, InputOption::VALUE_NONE, 'Si définie, la tâche criera en majuscules')
@@ -26,120 +46,304 @@ class InstallCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $loader = new \Symfony\Component\Yaml\Yaml();
-        $arrayConfig = $loader->parse(__DIR__.'/../../../../../../../app/config/config.yml');
+        $questionHelper = $this->getQuestionHelper();
+        $errors = array();
+        $runner = $questionHelper->getRunner($output, $errors);
         
-        die(print_r($arrayConfig,true));
+        $this->loader = new \Symfony\Component\Yaml\Yaml();
+        $this->config = $this->loader->parse(__DIR__.self::CONFIG_PATH);
+        
+        $this->loadTranslator();
+        
+        
+        
+        $runner($this->loopBundle($questionHelper,$input,$output));
+        
+        
+        
+        
+        $this->updateConfiguration();
+//        die(print_r($this->config,true));
 
-        $output->writeln(sprintf('SKize entity'. $name));
+//        $output->writeln(sprintf('SKize entity'. $name));
         
-        $entityPath = __DIR__.'/../../../'.strtr($name, '\\', '/').'.php';
-        $this->addExtends($entityPath, '\\SKCMS\\CoreBundle\\Entity\\SKBaseEntity');
-        
-        $repositoryPath =  __DIR__.'/../../../'.strtr($name, '\\', '/').'Repository.php';
-        $output->writeln(sprintf('SKize repository'. $repositoryPath));
-        $this->addExtends($repositoryPath, '\\SKCMS\\CoreBundle\\Repository\\SKEntityRepository',true);
-        
-        $explodedPath = explode('\\',$name);
-        
-        $explodedPath[count($explodedPath)-2] = 'Form';
-        $explodedPath[count($explodedPath)-1] .= 'Type';
-        
-        $formPath = implode('/',$explodedPath);
-        $formPath =  __DIR__.'/../../../'.$formPath.'.php';
-        $this->addExtends($formPath, '\\SKCMS\\CoreBundle\\Form\\EntityType',true);
-        $this->parentBuildForm($formPath);
-        
-        $output->writeln(sprintf('SKize entity'. $entityPath));
                 
         
     }
     
-    
-    private function addExtends($filePath,$extends,$force = false)
-    {
-        
-        
-        
-//        $file = fopen($filePath, "a+");
-        $data = file_get_contents($filePath);
-        if ($data)
+    private function loopBundle(QuestionHelper $questionHelper, InputInterface $input, OutputInterface $output){
+        $bundles = [
+            'admin' => [
+                'kernel'=>[
+                    ['bundle'=>'SKCMSAdminBundle','namespace'=>'SKCMS\AdminBundle'],
+                    ['bundle'=>'SKCMSCKFinderBundle','namespace'=>'SKCMS\CKFinderBundle'],
+                    ['bundle'=>'IvoryCKEditorBundle','namespace'=>'Ivory\CKEditorBundle'],
+                    ['bundle'=>'JonlilCKFinderBundle','namespace'=>'Jonlil\CKFinderBundle'],
+                    ['bundle'=>'StofDoctrineExtensionsBundle','namespace'=>'Stof\DoctrineExtensionsBundle'],
+                ],
+                'config'=>['loadSkCMSAdmin','loadCKEditor','loadDoctrineFunctions']
+            ],
+            'front'=>
+            [
+                'kernel'=>[['bundle'=>'SKCMSFrontBundle','namespace'=>'SKCMS\FrontBundle']]
+            ],
+            'user' =>
+            [
+                'kernel'=>[
+                    ['bundle'=>'SKCMSUserBundle','namespace'=>'SKCMS\UserBundle'],
+                    ['bundle'=>'FOSUserBundle','namespace'=>'FOS\UserBundle']
+                ],
+                'config'=>['loadFosUser','setSecurity']
+            ],
+            'contact'=>
+            [
+                'kernel'=>[['bundle'=>'SKCMSContactBundle','namespace'=>'SKCMS\ContactBundle']],
+                'config'=>['loadSKContact']
+            ],
+            'tracking'=>
+            [
+                'kernel'=>[['bundle'=>'SKCMSTrackingBundle','namespace'=>'SKCMS\TrackingBundle']]
+            ],
+        ];
+        foreach ($bundles as $bundleName => $bundle)
         {
-
-            $lines = explode("\n",$data);
-            
-            $i = 0;
-//            die(print_r($lines,true));
-            foreach ($lines as $line)
+            if ($input->isInteractive()) {
+                $question = new ConfirmationQuestion($questionHelper->getQuestion('Install '.$bundleName.' (kernel + config)', 'yes', '?'), true);
+                $auto = $questionHelper->ask($input, $output, $question);
+                $this->module_installed = $auto;
+            }
+            if ($auto)
             {
-                if (preg_match('#^class (.)+#',$line))
+                foreach ($bundle['kernel'] as $bundleKernel)
                 {
-                    if ($force)
-                    {
-                        $line = preg_replace('#(class [a-zA-z0-9]+)[ ]+(extends ([a-zA-Z0-9\\\])+)?#', '$1', $line);
-//                       
-                    }
-                    
-                    if (!preg_match('#(class [a-zA-z0-9]+)[ ]+extends ([a-zA-Z0-9\\\])+#', $line))
-                    {
-                        $line = preg_replace('#(class [A-Z]{1}[a-zA-z0-9]+)#', '$1 extends '.$extends, $line);
-                        
-                        
-                    }
-                    
-                    $lines[$i]=$line;
-                    
+                    $kernelUpdate = $this->updateKernel($this->getContainer()->get('kernel'), $bundleKernel['namespace'], $bundleKernel['bundle']);
                 }
-                if (preg_match('#(.*)private \$id;(.*)#',$line))
+                
+                if (array_key_exists('config', $bundle) && is_array($bundle['config']))
                 {
-                    $lines[$i] = preg_replace('#(.*)private \$id;(.*)#', '$1protected $id;$2', $line);
+                    foreach ($bundle['config'] as $configMethod)
+                    {
+                        call_user_method($configMethod, $this);
+    //          $this->$configMethod;
+                    }
                 }
-                $i++;
+                
             }
             
-            $newData = implode("\n",$lines);
-//           
-            file_put_contents($filePath, $newData);
-
+//            $runner($this->updateKernel($questionHelper, $input, $output, $this->getContainer()->get('kernel'), $bundle['kernel']['namespace'], $bundle['kernel']['bundle']));
+//            if ($this->module_installed)
+//            {
+//                die('works');
+//            }
         }
+    }
+    
+    protected function updateKernel( KernelInterface $kernel, $namespace, $bundle)
+    {
+        $auto = true;
+
+//        $output->write('Enabling the bundle inside the Kernel: ');
+        $manip = new KernelManipulator($kernel);
+        try {
+            $ret = $auto ? $manip->addBundle($namespace.'\\'.$bundle) : false;
+
+            if (!$ret) {
+                $reflected = new \ReflectionObject($kernel);
+
+                return array(
+                    sprintf('- Edit <comment>%s</comment>', $reflected->getFilename()),
+                    '  and add the following bundle in the <comment>AppKernel::registerBundles()</comment> method:',
+                    '',
+                    sprintf('    <comment>new %s(),</comment>', $namespace.'\\'.$bundle),
+                    '',
+                );
+            }
+        } catch (\RuntimeException $e) {
+            return array(
+                sprintf('Bundle <comment>%s</comment> is already defined in <comment>AppKernel::registerBundles()</comment>.', $namespace.'\\'.$bundle),
+                '',
+            );
+        }
+    }
+    
+    private function setSecurity()
+    {
+        $SkSecurity = 
+        [
+            'security'=>
+            [
+                'encoders'=> 'FOS\UserBundle\Model\UserInterface: sha512',
+                'role_hierarchy'=> 
+                [
+                    'ROLE_ADMIN'=> 'ROLE_USER',
+                    'ROLE_SUPER_ADMIN'=> ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_ALLOWED_TO_SWITCH']
+                ],
+                'providers'=>
+                [
+                    'fos_userbundle'=> 
+                    [
+                        'id'=> 'fos_user.user_provider.username'
+                    ]
+                ],
+                'firewalls'=>
+                [
+                    'main'=>
+                    [
+                        'pattern'=> '^/',
+                        'form_login'=> ['provider'=> 'fos_userbundle','csrf_provider'=> 'form.csrf_provider'],
+                        'logout'=>       true,
+                        'anonymous'=>    true
+
+                    ]
+                ],
+                'access_control'=>
+                [
+                    [ 'path'=> '^/login$', 'role'=> 'IS_AUTHENTICATED_ANONYMOUSLY' ],
+                    [ 'path'=> '^/login_check$', 'role'=> 'IS_AUTHENTICATED_ANONYMOUSLY' ],
+                    ['path'=> '^/register', 'role'=> 'IS_AUTHENTICATED_ANONYMOUSLY' ],
+                    ['path'=> '^/resetting', 'role'=> 'IS_AUTHENTICATED_ANONYMOUSLY '],
+                    ['path' => '^/admin/templates', 'role'=> 'ROLE_SUPER_ADMIN' ],
+                    ['path'=> '^/admin/entity-list', 'role'=> 'ROLE_SUPER_ADMIN '],
+                    ['path'=> '^/admin/', 'role'=> 'ROLE_ADMIN' ],
+                    ['path'=> '^/', 'role'=> 'IS_AUTHENTICATED_ANONYMOUSLY' ]
+                ]
+            ]
+        ];
+        $originalSecurity = $this->loader->parse(__DIR__.self::SECURITY_PATH);
+        file_put_contents(__DIR__.self::SECURITY_PATH.'.bkp', $this->loader->dump($originalSecurity,3));
+        
+        $finalSecurity = array_merge_recursive($originalSecurity,$SkSecurity);
+        file_put_contents(__DIR__.self::SECURITY_PATH, $this->loader->dump($finalSecurity,3));
+        
+            
+            
+    }
+    
+    private function loadSkCMSAdmin()
+    {
+        $this->skConfig['skcms_admin'] =
+        [
+           'modules'=>
+            [
+                'user'=> ['enabled'=> true, 'userEntity'=> '~'],
+                'contact'=> ['enabled'=> false] 
+            ],
+            'siteInfo'=> ['homeRoute'=> "skcms_front_home",'locales'=> ['fr']],
+            'menuGroups'=>
+            [
+                'group1'=>['id'=> 1,'name'=> 'Documents']
+            ],
+            'entities'=>[]
+            
+    
+        
+        ];
+        
+            
+    
+    }
+    
+    private function loadSkContact()
+    {
+        $this->skConfig = [
+            'skcms_contact'=>
+            [
+                'entity'=>'',
+                'form_type'=>'',
+                'email_notification'=>
+                [
+                    'subject'=>'New message on website',
+                    'target'=>[]
+                ]
+                
+            ]
+            
+        ];
+    }
+    
+    
+    private function loadFosUser()
+    {
+        $this->skConfig['fos_user'] = ['db_driver'=>'orm','firewall_name'=>'main','user_class'=>'SKCMS\UserBundle\Entity\User'];
+    }
+    
+    public function loadCKEditor()
+    {
+        
+        $this->skConfig['jonlil_ck_finder'] = ['license'=>'','key'=>'','name'=>'','baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
+        $this->skConfig['skcmsck_finder'] = ['license'=>'','key'=>'','name'=>'','baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
         
     }
     
-    private function parentBuildForm($filePath)
+    private function mergeOrCreate($key,$array)
     {
-        
-        $data = file_get_contents($filePath);
-        if ($data)
+        if (array_key_exists($key, $this->config))
         {
-            $lines = explode("\n",$data);
-            
-            $i = 0;
-            foreach ($lines as $line)
-            {
-                if (preg_match('#(.*)function buildForm\(FormBuilderInterface \$builder, array \$options\)(.*)#',$line))
-                {
-//                    die($line);
-                    
-                    $lines[$i+1].="\n\t".'parent::buildForm($builder, $options);';
-                    
-                }
-                $i++;
-            }
-            
-            $newData = implode("\n",$lines);
-
-//            die($newData);
-//            $newdata = preg_replace('#(function buildForm\(FormBuilderInterface $builder, array $options)
-//    \{)#', '$1 \n  parent::buildForm($builder, $options); \n', $data);
-//            
-
-
-
-            file_put_contents($filePath, $newData);
-           
+            $this->config[$key] = array_merge_recursive($this->config[$key],$array);
         }
+        else
+        {
+            $this->config[$key] = $array;
+        }
+    }
+    private function setStof()
+    {
+        $stof = ['orm'=>['default'=>['sluggable'=>true,'translatable'=>true]]];
+        $this->mergeOrCreate('stof_doctrine_extensions', $stof);
+    }
+    
+    private function loadDoctrineFunctions()
+    {
+        $skConfig['doctrine'] = ['orm'=>['dql'=>['numeric_function  s'=>['Rand'=>'SKCMS\CoreBundle\DoctrineFunctions\Rand']]]];
+//        if (array_key_exists('doctrine', $this->config))
+//        {
+//            if (!array_key_exists('dql', $this->config['doctrine']))
+//            {
+//                $this->config['doctrine']['dql']=['numeric_functions'=>['Rand'=>'SKCMS\CoreBundle\DoctrineFunctions\Rand']];
+//            }
+//            else if (!array_key_exists('numeric_functions', $this->config['doctrine']['dql']))
+//            {
+//                $this->config['doctrine']['dql']['numeric_functions']=['Rand'=>'SKCMS\CoreBundle\DoctrineFunctions\Rand'];
+//            }
+//            else
+//            {
+//                $this->config['doctrine']['dql']['numeric_functions']['Rand']='SKCMS\CoreBundle\DoctrineFunctions\Rand';
+//            }
+//        }
+    }
+    
+    private function updateConfiguration()
+    {
+        //Backing up old config
+        $yaml = $this->loader->dump($this->config,2);
+        file_put_contents(__DIR__.self::CONFIG_PATH.'.bkp', $yaml);
+        
+        //Update new config
+        $this->config = array_merge_recursive($this->config,$this->skConfig);
+        $yaml = $this->loader->dump($this->config,2);
+        file_put_contents(__DIR__.self::CONFIG_PATH, $yaml);
+    }
+    
+    private function loadTranslator()
+    {
+        $this->skConfig['framework'] = ['translator'=>['fallbacks' => ['%locale%']]];
+//        if (array_key_exists('translator', $this->config['framework']) && array_key_exists('fallbacks',$this->config['framework']['translator']))
+//        {
+//            $this->config['framework']['translator']['fallbacks'] = ['%locale%'];
+//        }
+//        else
+//        {
+//            $this->config['framework']['translator'] = ['fallbacks'=>['%locale%']];
+//        }
         
     }
+    
+    protected function createGenerator()
+    {
+        return null;
+     //   return new BundleGenerator($this->getContainer()->get('filesystem'));
+    }
+    
     
     
 }
