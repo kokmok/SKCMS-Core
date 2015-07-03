@@ -38,7 +38,9 @@ services:
     skcms_core.slugutils:
         class: SKCMS\CoreBundle\Service\SlugUtils
         arguments: [@service_container]
-    
+        
+    skcms_core.classmodifier:
+        class: SKCMS\CoreBundle\Service\ClassModifier
         
 #    skcms_core.example:
 #        class: %skcms_core.example.class%
