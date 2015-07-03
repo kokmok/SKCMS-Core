@@ -28,19 +28,28 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
  
     private $config;
     private $skConfig;
+    private $routing;
+    private $skRouting;
     private $loader;
     private $module_installed;
     const CONFIG_PATH = '/../../../../../../app/config/config.yml';
     const SECURITY_PATH = '/../../../../../../app/config/security.yml';
+    const ROUTING_PATH = '/../../../../../../app/config/routing.yml';
 
+    public function __construct($name = null) {
+        parent::__construct($name);
+        $this->skConfig = [];
+        $this->config = [];
+        $this->routing = [];
+        $this->skRouting = [];
+    }
 
     protected function configure()
     {
         $this
             ->setName('skcms:install')
-            ->setDescription('Set extends for entity, its repository and type')
-//            ->addArgument('name', InputArgument::REQUIRED, 'Wich entity would you skize')
-//            ->addOption('yell', null, InputOption::VALUE_NONE, 'Si définie, la tâche criera en majuscules')
+            ->setDescription('Install SKCMS, update and backup config.yml, security.yml, routing.yml and AppKernel.php')
+
         ;
     }
 
@@ -60,13 +69,10 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
         $runner($this->loopBundle($questionHelper,$input,$output));
         
         
-        
+       
         
         $this->updateConfiguration();
-//        die(print_r($this->config,true));
-
-//        $output->writeln(sprintf('SKize entity'. $name));
-        
+ 
                 
         
     }
@@ -81,11 +87,14 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                     ['bundle'=>'JonlilCKFinderBundle','namespace'=>'Jonlil\CKFinderBundle'],
                     ['bundle'=>'StofDoctrineExtensionsBundle','namespace'=>'Stof\DoctrineExtensionsBundle'],
                 ],
-                'config'=>['loadSkCMSAdmin','loadCKEditor','loadDoctrineFunctions']
+                'config'=>['loadSkCMSAdmin','loadCKEditor','loadDoctrineFunctions'],
+                'route'=>['routeAdmin']
+                
             ],
             'front'=>
             [
-                'kernel'=>[['bundle'=>'SKCMSFrontBundle','namespace'=>'SKCMS\FrontBundle']]
+                'kernel'=>[['bundle'=>'SKCMSFrontBundle','namespace'=>'SKCMS\FrontBundle']],
+                'route'=>['routeFront']
             ],
             'user' =>
             [
@@ -93,16 +102,19 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                     ['bundle'=>'SKCMSUserBundle','namespace'=>'SKCMS\UserBundle'],
                     ['bundle'=>'FOSUserBundle','namespace'=>'FOS\UserBundle']
                 ],
-                'config'=>['loadFosUser','setSecurity']
+                'config'=>['loadFosUser','setSecurity'],
+                'route'=>['routeUser']
             ],
             'contact'=>
             [
                 'kernel'=>[['bundle'=>'SKCMSContactBundle','namespace'=>'SKCMS\ContactBundle']],
-                'config'=>['loadSKContact']
+                'config'=>['loadSKContact'],
+                'route'=>['routeContact']
             ],
             'tracking'=>
             [
-                'kernel'=>[['bundle'=>'SKCMSTrackingBundle','namespace'=>'SKCMS\TrackingBundle']]
+                'kernel'=>[['bundle'=>'SKCMSTrackingBundle','namespace'=>'SKCMS\TrackingBundle']],
+                'route'=>['routeTracking']
             ],
         ];
         foreach ($bundles as $bundleName => $bundle)
@@ -124,19 +136,22 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                     foreach ($bundle['config'] as $configMethod)
                     {
                         call_user_method($configMethod, $this);
-    //          $this->$configMethod;
+
+                    }
+                }
+                if (array_key_exists('route', $bundle) && is_array($bundle['route']))
+                {
+                    foreach ($bundle['route'] as $routeMethod)
+                    {
+                        call_user_method($routeMethod, $this);
+
                     }
                 }
                 
             }
-            
-//            $runner($this->updateKernel($questionHelper, $input, $output, $this->getContainer()->get('kernel'), $bundle['kernel']['namespace'], $bundle['kernel']['bundle']));
-//            if ($this->module_installed)
-//            {
-//                die('works');
-//            }
         }
     }
+    
     
     protected function updateKernel( KernelInterface $kernel, $namespace, $bundle)
     {
@@ -172,7 +187,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
         [
             'security'=>
             [
-                'encoders'=> 'FOS\UserBundle\Model\UserInterface: sha512',
+                'encoders'=> ['FOS\UserBundle\Model\UserInterface' => 'sha512'],
                 'role_hierarchy'=> 
                 [
                     'ROLE_ADMIN'=> 'ROLE_USER',
@@ -192,7 +207,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                         'pattern'=> '^/',
                         'form_login'=> ['provider'=> 'fos_userbundle','csrf_provider'=> 'form.csrf_provider'],
                         'logout'=>       true,
-                        'anonymous'=>    true
+                        'anonymous'=> true,
 
                     ]
                 ],
@@ -212,7 +227,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
         $originalSecurity = $this->loader->parse(__DIR__.self::SECURITY_PATH);
         file_put_contents(__DIR__.self::SECURITY_PATH.'.bkp', $this->loader->dump($originalSecurity,3));
         
-        $finalSecurity = array_merge_recursive($originalSecurity,$SkSecurity);
+        $finalSecurity = array_replace_recursive($originalSecurity,$SkSecurity);
         file_put_contents(__DIR__.self::SECURITY_PATH, $this->loader->dump($finalSecurity,3));
         
             
@@ -225,7 +240,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
         [
            'modules'=>
             [
-                'user'=> ['enabled'=> true, 'userEntity'=> '~'],
+                'user'=> ['enabled'=> true, 'userEntity'=> null],
                 'contact'=> ['enabled'=> false] 
             ],
             'siteInfo'=> ['homeRoute'=> "skcms_front_home",'locales'=> ['fr']],
@@ -245,8 +260,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     
     private function loadSkContact()
     {
-        $this->skConfig = [
-            'skcms_contact'=>
+        $this->skConfig['skcms_contact'] =
             [
                 'entity'=>'',
                 'form_type'=>'',
@@ -258,7 +272,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                 
             ]
             
-        ];
+        ;
     }
     
     
@@ -270,8 +284,10 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     public function loadCKEditor()
     {
         
-        $this->skConfig['jonlil_ck_finder'] = ['license'=>'','key'=>'','name'=>'','baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
-        $this->skConfig['skcmsck_finder'] = ['license'=>'','key'=>'','name'=>'','baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
+        $this->skConfig['jonlil_ck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
+        $this->skConfig['skcmsck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
+        $this->skConfig['parameters']=['jonlil.ckfinder.customAuthentication'=>'%kernel.root_dir%/...path your custom config.php or any other file'];
+               
         
     }
     
@@ -279,7 +295,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     {
         if (array_key_exists($key, $this->config))
         {
-            $this->config[$key] = array_merge_recursive($this->config[$key],$array);
+            $this->config[$key] = array_replace_recursive($this->config[$key],$array);
         }
         else
         {
@@ -295,21 +311,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     private function loadDoctrineFunctions()
     {
         $skConfig['doctrine'] = ['orm'=>['dql'=>['numeric_function  s'=>['Rand'=>'SKCMS\CoreBundle\DoctrineFunctions\Rand']]]];
-//        if (array_key_exists('doctrine', $this->config))
-//        {
-//            if (!array_key_exists('dql', $this->config['doctrine']))
-//            {
-//                $this->config['doctrine']['dql']=['numeric_functions'=>['Rand'=>'SKCMS\CoreBundle\DoctrineFunctions\Rand']];
-//            }
-//            else if (!array_key_exists('numeric_functions', $this->config['doctrine']['dql']))
-//            {
-//                $this->config['doctrine']['dql']['numeric_functions']=['Rand'=>'SKCMS\CoreBundle\DoctrineFunctions\Rand'];
-//            }
-//            else
-//            {
-//                $this->config['doctrine']['dql']['numeric_functions']['Rand']='SKCMS\CoreBundle\DoctrineFunctions\Rand';
-//            }
-//        }
+
     }
     
     private function updateConfiguration()
@@ -319,9 +321,19 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
         file_put_contents(__DIR__.self::CONFIG_PATH.'.bkp', $yaml);
         
         //Update new config
-        $this->config = array_merge_recursive($this->config,$this->skConfig);
-        $yaml = $this->loader->dump($this->config,2);
+        $newConfig = array_replace_recursive($this->config,$this->skConfig);
+        $yaml = $this->loader->dump($newConfig,3);
         file_put_contents(__DIR__.self::CONFIG_PATH, $yaml);
+        
+        //Backing up old routing
+        $this->routing = $this->loader->parse(__DIR__.self::ROUTING_PATH);
+        $yaml = $this->loader->dump($this->routing,2);
+        file_put_contents(__DIR__.self::ROUTING_PATH.'.bkp', $yaml);
+        
+        //Update new config
+        $newRouting = array_replace_recursive($this->routing,$this->skRouting);
+        $yaml = $this->loader->dump($newRouting,3);
+        file_put_contents(__DIR__.self::ROUTING_PATH, $yaml);
     }
     
     private function loadTranslator()
@@ -337,6 +349,80 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
 //        }
         
     }
+    
+    
+    
+    /** ROUTING FUNCTIONS */
+    
+    private function routeTracking()
+    {
+         $this->skRouting['skcms_tracking']=
+                [
+                    'ressource'=>"@SKCMSTrackingBundle/Resources/config/routing.yml",
+                    'prefix'=> '/'
+                ];
+    }
+    private function routeUser()
+    {
+         $this->skRouting['fos_user_security']=
+                [
+                    'ressource'=>"@FOSUserBundle/Resources/config/routing/security.xml",
+                    'prefix'=> '/'
+                ];
+         $this->skRouting['fos_user_profile']=
+                [
+                    'ressource'=>"@FOSUserBundle/Resources/config/routing/profile.xml",
+                    'prefix'=> '/profile'
+                ];
+         $this->skRouting['fos_user_resetting']=
+                [
+                    'ressource'=>"@FOSUserBundle/Resources/config/routing/resetting.xml",
+                    'prefix'=> '/resetting'
+                ];
+         $this->skRouting['fos_user_change_password']=
+                [
+                    'ressource'=>"@FOSUserBundle/Resources/config/routing/change_password.xml",
+                    'prefix'=> '/profile'
+                ];
+    }
+    private function routeFront()
+    {
+        $this->skRouting['skcms_front']=
+                [
+                    'ressource'=>"@SKCMSFrontBundle/Resources/config/routing.yml",
+                    'prefix'=> '/'
+                ];
+        
+    }
+    private function routeContact()
+    {
+        $this->skRouting['skcms_contact']=
+                [
+                    'ressource'=>"@SKCMSContactBundle/Resources/config/routing-skcmsContact.yml",
+                    'prefix'=> '/'
+                ];
+                
+    }
+    private function routeAdmin()
+    {
+        $this->skRouting['skcmsck_finder']=
+                [
+                    'ressource'=>"@SKCMSCKFinderBundle/Resources/config/routing/routing.yml",
+                    'prefix'=> '/'
+                ];
+        $this->skRouting['skcms_admin']=
+                [
+                    'ressource'=>"@SKCMSAdminBundle/Resources/config/routing.yml",
+                    'prefix'=> '/'
+                ];
+        $this->skRouting['ck_finder']=
+                [
+                    'ressource'=>"@JonlilCKFinderBundle/Resources/config/routing/routing.yml",
+                    'prefix'=> '/ckfinder'
+                ];
+        
+    }
+    
     
     protected function createGenerator()
     {
