@@ -55,7 +55,7 @@ class GenerateEntityCommand extends GenerateDoctrineEntityCommand
         {
             $repositoryPath = $bundle->getPath().'/Entity/'.str_replace('\\', '/', $entity).'Repository.php';
             $output->writeln(sprintf('SKize repository'. $repositoryPath));
-            $this->addExtends($repositoryPath, '\\SKCMS\\CoreBundle\\Repository\\SKEntityRepository',true);
+            $classModifier->addExtends($repositoryPath, '\\SKCMS\\CoreBundle\\Repository\\SKEntityRepository',true);
         }
         
         

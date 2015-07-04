@@ -86,7 +86,7 @@ class ClassModifier
         }
     }
     
-    private function parentBuildForm($filePath)
+    static function parentBuildForm($filePath)
     {
         
         $data = file_get_contents($filePath);
