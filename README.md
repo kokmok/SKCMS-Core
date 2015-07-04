@@ -27,3 +27,9 @@ This only works with annotation format.
 php app/console skcms:generate:entity
 ```
 
+###Create SKCMS compatible entity form type 
+
+```
+php app/console skcms:generate:form BundleName:Entity
+```
+
