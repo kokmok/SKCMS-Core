@@ -311,8 +311,9 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     }
     private function setStof()
     {
-        $stof = ['orm'=>['default'=>['sluggable'=>true,'translatable'=>true]]];
-        $this->mergeOrCreate('stof_doctrine_extensions', $stof);
+        $this->skConfig['stof_doctrine_extensions']['orm']['default']['sluggable'] = true;
+//        $stof = ['orm'=>['default'=>['sluggable'=>true,'translatable'=>true]]];
+//        $this->mergeOrCreate('stof_doctrine_extensions', $stof);
     }
     
     private function loadDoctrineFunctions()
