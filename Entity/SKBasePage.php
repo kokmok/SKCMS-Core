@@ -14,7 +14,7 @@ use SKCMS\CoreBundle\Slug\SKSlug as SKSlug;
  */
 class SKBasePage extends SKBaseEntity 
 {
-//     @SKSlug(field="title")
+
     /**
      * @Gedmo\Slug(fields={"title"},updatable=false)
      * @Gedmo\Translatable

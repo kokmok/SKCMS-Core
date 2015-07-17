@@ -42,6 +42,8 @@ services:
     skcms_core.classmodifier:
         class: SKCMS\CoreBundle\Service\ClassModifier
         
+    
+        
 #    skcms_core.example:
 #        class: %skcms_core.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]

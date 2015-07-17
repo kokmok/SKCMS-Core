@@ -116,6 +116,11 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                 'kernel'=>[['bundle'=>'SKCMSTrackingBundle','namespace'=>'SKCMS\TrackingBundle']],
                 'route'=>['routeTracking']
             ],
+            'shop'=>
+            [
+                'kernel'=>[['bundle'=>'SKCMSShopBundle','namespace'=>'SKCMS\ShopBundle']],
+                'route'=>['routeShop']
+            ],
         ];
         foreach ($bundles as $bundleName => $bundle)
         {
@@ -353,6 +358,15 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     
     
     /** ROUTING FUNCTIONS */
+    
+    private function routerouteShop()
+    {
+         $this->skRouting['skcms_shop']=
+                [
+                    'ressource'=>"@SKCMSShopBundle/Resources/config/routing.yml",
+                    'prefix'=> '/'
+                ];
+    }
     
     private function routeTracking()
     {
