@@ -14,7 +14,9 @@ use Gedmo\Translatable\Translatable;
  */
 class SKBaseEntity implements Translatable
 {
-    /** @ORM\Column(name="id",type="integer") */
+    /** 
+     * @ORM\Column(name="id",type="integer") 
+     */
     protected $id;
 
     /**

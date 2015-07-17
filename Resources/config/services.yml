@@ -41,7 +41,11 @@ services:
         
     skcms_core.classmodifier:
         class: SKCMS\CoreBundle\Service\ClassModifier
-        
+    
+    skcms_core.entityreferenceloader:
+        class: SKCMS\CoreBundle\Listener\EntityReferenceLoader
+        tags:
+            - { name: doctrine.event_listener, event: postLoad }
     
         
 #    skcms_core.example:
