@@ -6,18 +6,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class SKImageType extends AbstractType
+class EntityReferenceType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('picture','ckfinderpopupsimple')
+            ->add('className','hidden')
+            ->add('foreignKey','hidden')
         ;
-        
     }
     
     /**
@@ -26,7 +26,7 @@ class SKImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'SKCMS\CoreBundle\Entity\SKImage'
+            'data_class' => 'SKCMS\CoreBundle\Entity\EntityReference'
         ));
     }
 
@@ -35,6 +35,6 @@ class SKImageType extends AbstractType
      */
     public function getName()
     {
-        return 'skimage';
+        return 'skcms_corebundle_entityreference';
     }
 }

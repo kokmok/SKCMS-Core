@@ -75,17 +75,13 @@ class MenuUtils
     private function getTranslatedTree($menu)
     {
         $locale = $this->locale;
-//        if ($this->locale == 'en') // JE sens que ce truc va rester des plombes comme ça, pas vrai ? 20/2/2015
-//        {
-//            $locale = 'en_US';
-//        }
+
         
         foreach ($menu->getChildren() as $child)
         {
             $child->setTranslatableLocale($locale);
             $this->em->refresh($child);
-//            //dump($locale);
-//            //dump($child);
+
             $child = $this->getTranslatedTree($child,$locale);
         }
         return $menu;
@@ -157,13 +153,17 @@ class MenuUtils
                 $menu->setTargetEntity($targetEntity);
                 if ($targetEntity instanceof SKBasePage)
                 {
+                    
+                    
                     if ($multilingue)
                     {
-                        $menu->setLink($router->generate('skcms_front_page_multilingue', ['slug'=>$targetEntity->getSlug(),'_locale'=>$this->locale]));
+                        $path = $targetEntity->getSlug() == 'home' ? $router->generate('skcms_front_home_multilingue', ['_locale'=>$this->locale]) : $router->generate('skcms_front_page_multilingue', ['slug'=>$targetEntity->getSlug(),'_locale'=>$this->locale]);
+                        $menu->setLink($path);
                     }
                     else
                     {
-                        $menu->setLink($router->generate('skcms_front_page', ['slug'=>$targetEntity->getSlug()]));
+                        $path = $targetEntity->getSlug() == 'home' ? $router->generate('skcms_front_home') : $router->generate('skcms_front_page', ['slug'=>$targetEntity->getSlug()]);
+                        $menu->setLink($path);
                     }
                     
                 }

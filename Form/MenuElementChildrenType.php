@@ -6,17 +6,28 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class SKImageType extends AbstractType
+class MenuElementChildrenType extends AbstractType
 {
-        /**
+    
+    
+    private $choices;
+    
+    public function __construct($choices)
+    {
+        
+        $this->choices = $choices;
+        
+       
+    }
+    
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('picture','ckfinderpopupsimple')
-        ;
+        $builder->setAttribute('choices',$this->choices);
+        
         
     }
     
@@ -26,7 +37,7 @@ class SKImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'SKCMS\CoreBundle\Entity\SKImage'
+            'data_class' => 'SKCMS\CoreBundle\Entity\MenuElement'
         ));
     }
 
@@ -35,6 +46,6 @@ class SKImageType extends AbstractType
      */
     public function getName()
     {
-        return 'skimage';
+        return 'menuelementchildren';
     }
 }

@@ -6,18 +6,22 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class SKImageType extends AbstractType
+class OpeningHoursType extends \SKCMS\CoreBundle\Form\EntityType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+	parent::buildForm($builder, $options);
         $builder
-            ->add('picture','ckfinderpopupsimple')
+            ->add('name')
+            ->add('text')
+            ->add('openAt')
+            ->add('closeAt')
+            
         ;
-        
     }
     
     /**
@@ -26,7 +30,7 @@ class SKImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'SKCMS\CoreBundle\Entity\SKImage'
+            'data_class' => 'SKCMS\CoreBundle\Entity\OpeningHours'
         ));
     }
 
@@ -35,6 +39,6 @@ class SKImageType extends AbstractType
      */
     public function getName()
     {
-        return 'skimage';
+        return 'skcms_corebundle_openinghours';
     }
 }

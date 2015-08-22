@@ -43,6 +43,8 @@ class GenerateEntityCommand extends GenerateDoctrineEntityCommand
     }
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $calledClass = get_called_class();
+        
         
         $input->setOption('format', 'annotation');
 //        $input->setOption('with-repository', true);
@@ -57,7 +59,7 @@ class GenerateEntityCommand extends GenerateDoctrineEntityCommand
         
         $entityPath = $bundle->getPath().'/Entity/'.str_replace('\\', '/', $entity).'.php';
         
-        $classModifier->addExtends($entityPath, self::CLASS_PARENT);
+        $classModifier->addExtends($entityPath, $calledClass::CLASS_PARENT);
         $classModifier->privateToProtected($entityPath);
         $output->writeln(sprintf('SKize entity : '. $entity));
 
@@ -65,7 +67,7 @@ class GenerateEntityCommand extends GenerateDoctrineEntityCommand
         {
             $repositoryPath = $bundle->getPath().'/Entity/'.str_replace('\\', '/', $entity).'Repository.php';
             $output->writeln(sprintf('SKize repository'. $repositoryPath));
-            $classModifier->addExtends($repositoryPath, self::REPO_PARENT,true);
+            $classModifier->addExtends($repositoryPath, $calledClass::REPO_PARENT,true);
         }
         
         return;

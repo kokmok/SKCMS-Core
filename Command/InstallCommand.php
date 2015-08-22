@@ -293,7 +293,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
         
         $this->skConfig['jonlil_ck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
         $this->skConfig['skcmsck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
-        $this->skConfig['parameters']=['jonlil.ckfinder.customAuthentication'=>'%kernel.root_dir%/...path your custom config.php or any other file'];
+        $this->skConfig['parameters']=['jonlil.ckfinder.customAuthentication'=>'%kernel.root_dir%/config/config.yml'];
                
         
     }

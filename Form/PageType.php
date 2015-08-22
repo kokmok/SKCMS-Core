@@ -8,7 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class PageType extends EntityType
 {
-        /**
+    public function __construct()
+    {
+        
+    }
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -19,7 +23,11 @@ class PageType extends EntityType
             
             ->add('template')
             ->add('lists')
-            ->add('slug','skscms_protecedinput')
+            ->add('menus')
+            ->add('slug','skscms_protecedinput',['required'=>false])
+            ->add('minRoleAccess','choice',['choices'=>['ANON'=>'anonyme','ROLE_USER'=>'user','ROLE_CLIENT'=>'client','ROLE_ADMIN'=>'admin']])
+            ->add('redirectRoute',null,['required'=>false])
+            ->add('forward',null,['required'=>false])
             
         ;
     }

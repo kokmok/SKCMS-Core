@@ -6,18 +6,23 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class SKImageType extends AbstractType
+class SEOInfoType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('picture','ckfinderpopupsimple')
+            ->add('description')
+            ->add('keywords')
+            ->add('creationDate')
+            ->add('updateDate')
+            ->add('draft')
+            ->add('userCreate')
+            ->add('userUpdate')
         ;
-        
     }
     
     /**
@@ -26,7 +31,7 @@ class SKImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'SKCMS\CoreBundle\Entity\SKImage'
+            'data_class' => 'SKCMS\CoreBundle\Entity\SEOInfo'
         ));
     }
 
@@ -35,6 +40,6 @@ class SKImageType extends AbstractType
      */
     public function getName()
     {
-        return 'skimage';
+        return 'skcms_corebundle_seoinfo';
     }
 }

@@ -82,6 +82,11 @@ class ContactInfos implements Translatable
      * @Gedmo\Locale
      */
     protected $locale;
+    
+//    /**
+//     * @ORM\ManyToMany(targetEntity="SKCMS\CoreBundle\Entity\OpeningHours")
+//     */
+//    protected $openingHours;
 
 
     /**
@@ -281,5 +286,20 @@ class ContactInfos implements Translatable
     public function getFacebookLink()
     {
         return $this->facebookLink;
+    }
+    
+    public function addOpeningHours(OpeningHours $OpeningHours)
+    {
+        $this->openingHours->add($OpeningHours);
+        return $this;
+    }
+    public function removeOpeningHours(OpeningHours $OpeningHours)
+    {
+        $this->openingHours->remove($OpeningHours);
+        return $this;
+    }
+    public function getOpeningHours()
+    {
+        return $this->openingHours;
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class EntityReference
 {
@@ -97,11 +98,20 @@ class EntityReference
     public function setEntity($entity)
     {
         $this->entity = $entity;
+        $this->setInfosFromEntity();
         return $this;
     }
     
     public function getEntity()
     {
         return $this->entity;
+    }
+    
+    
+    private function setInfosFromEntity()
+    {
+        $this->className = get_class($this->entity);
+        $this->foreignKey = $this->entity->getId();
+        
     }
 }

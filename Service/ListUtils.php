@@ -28,12 +28,12 @@ class ListUtils
         {
             $locale = $this->container->get('request')->getLocale();
         
-    //        die('locale'.$locale);
+            
             $lists = [];
 
             foreach ($page->getLists() as $list)
             {
-
+                
                 $entityParams = $entitiesParams[$list->getEntity()];
                 $repo = $this->em->getRepository($entityParams['bundle'].'Bundle:'.$list->getEntity());
     //            $repo->setDefaultLocale($locale);

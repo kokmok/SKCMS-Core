@@ -9,6 +9,10 @@ namespace SKCMS\CoreBundle\Service;
  */
 class ClassModifier 
 {
+    
+    private $fileContent;
+    private $filePath;
+    
     public function __construct() {
         ;
     }
@@ -109,16 +113,56 @@ class ClassModifier
             
             $newData = implode("\n",$lines);
 
-//            die($newData);
-//            $newdata = preg_replace('#(function buildForm\(FormBuilderInterface $builder, array $options)
-//    \{)#', '$1 \n  parent::buildForm($builder, $options); \n', $data);
-//            
-
-
 
             file_put_contents($filePath, $newData);
            
         }
+        
+    }
+    
+    public function removeLineContaining($filePath,$contains)
+    {
+        $this->filePath = $filePath;
+        $this->data = file_get_contents($filePath);
+        if ($this->data)
+        {
+            if (is_array($contains))
+            {
+                foreach($contains as $contain)
+                {
+                    $this->findAndRemoveLineContaining($contain);
+                }
+            }
+            else
+            {
+                $this->findAndRemoveLineContaining($contains);
+            }
+        }
+        
+        file_put_contents($filePath, $this->data);
+        
+    }
+    
+    
+    private function findAndRemoveLineContaining($contains)
+    {
+           $lines = explode("\n",$this->data);
+            
+            $i = 0;
+            foreach ($lines as $line)
+            {
+                if (preg_match('#'.$contains.'#',$line))
+                {
+                    $lines[$i] ="";
+                }
+                $i++;
+            }
+            
+            $this->data = implode("\n",$lines);
+
+
+            
+           
         
     }
 }

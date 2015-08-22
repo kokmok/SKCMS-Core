@@ -38,21 +38,30 @@ class GenerateFormCommand extends GenerateDoctrineFormCommand
 //        $metadata = $this->getEntityMetadata($entityClass);
         $bundle   = $this->getApplication()->getKernel()->getBundle($bundle);
         
-//        $className = $entityClass.'Type';
+        
+        $entityPath = $bundle->getPath().'/Entity/'.$entity.'.php';
+        $entityContent = file_get_contents($entityPath);
+        
+        $extension = '\\SKCMS\\CoreBundle\\Form\\EntityType';
+        
+        if (preg_match('#SKBasePage#', $entityContent))
+        {
+            $extension='\\SKCMS\\CoreBundle\\Form\\PageType';
+        }
+        
+        
         $dirPath         = $bundle->getPath().'/Form';
         $classPath = $dirPath.'/'.str_replace('\\', '/', $entity).'Type.php';
         
         $classModifier = $this->getContainer()->get('skcms_core.classmodifier');
-        $classModifier->addExtends($classPath, '\\SKCMS\\CoreBundle\\Form\\EntityType');
+        
+        $classModifier->addExtends($classPath, $extension);
         $classModifier->parentBuildForm($classPath);
+        $classModifier->removeLineContaining($classPath,['slug','userCreate','userUpdate','creationDate','updateDate','draft','position']);
         
         $output->writeln($classPath.' skized');
         
         
-//        $output->writeln(sprintf(
-//            'The new %s.php class file has been created under %s.',
-//            $generator->getClassName(),
-//            $generator->getClassPath()
-//        ));
+
     }
 }

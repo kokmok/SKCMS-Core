@@ -35,6 +35,11 @@ class SKBaseEntity implements Translatable
     protected $draft;
     
     /**
+     * @ORM\Column(name="position", type="integer")
+     */
+    protected $position;
+    
+    /**
      *
      *  @ORM\ManyToOne(targetEntity="SKCMS\UserBundle\Entity\User")
      */
@@ -53,6 +58,7 @@ class SKBaseEntity implements Translatable
      */
     protected $locale;
     
+    
     protected $slug;
 
     
@@ -61,6 +67,7 @@ class SKBaseEntity implements Translatable
         $this->draft = false;
         $this->creationDate = new \DateTime();
         $this->updateDate = new \DateTime();
+        $this->position = 0;
     }
 
     /**
@@ -194,5 +201,15 @@ class SKBaseEntity implements Translatable
         {
             return $this->getTitle();
         }
+    }
+    
+    public function getPosition()
+    {
+        return $this->position;
+    }
+    
+    public function setPosition($position)
+    {
+        $this->position = $position;
     }
 }
