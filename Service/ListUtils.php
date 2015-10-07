@@ -35,7 +35,7 @@ class ListUtils
             {
                 
                 $entityParams = $entitiesParams[$list->getEntity()];
-                $repo = $this->em->getRepository($entityParams['bundle'].'Bundle:'.$list->getEntity());
+                $repo = $this->em->getRepository($entityParams['class']);
     //            $repo->setDefaultLocale($locale);
                 
                 $entities = $repo->findBy([],[$list->getOrderBy()=>$list->getOrder()],$list->getLimit(),null,$locale);

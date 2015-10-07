@@ -99,8 +99,7 @@ class MenuUtils
         {
             
             $entityParams = $entitiesParams[$list->getEntity()];
-            $repo = $this->em->getRepository($entityParams['bundle'].'Bundle:'.$list->getEntity());
-//            $repo->setDefaultLocale($this->locale);
+            $repo = $this->em->getRepository($entityParams['class']);
             $entities = $repo->findBy([],[$list->getOrderBy()=>$list->getOrder()],$list->getLimit());
             $lists[$list->getName()] = $entities;
             

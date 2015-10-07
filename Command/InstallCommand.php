@@ -82,9 +82,8 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
             'admin' => [
                 'kernel'=>[
                     ['bundle'=>'SKCMSAdminBundle','namespace'=>'SKCMS\AdminBundle'],
-                    ['bundle'=>'SKCMSCKFinderBundle','namespace'=>'SKCMS\CKFinderBundle'],
-                    ['bundle'=>'IvoryCKEditorBundle','namespace'=>'Ivory\CKEditorBundle'],
-                    ['bundle'=>'JonlilCKFinderBundle','namespace'=>'Jonlil\CKFinderBundle'],
+                    ['bundle'=>'IvoryCKEditorBundle','namespace'=>'Ivory\CKEditorBundle'],            
+                    ['bundle'=>'FMElfinderBundle','namespace'=>'FM\ElfinderBundle'],            
                     ['bundle'=>'StofDoctrineExtensionsBundle','namespace'=>'Stof\DoctrineExtensionsBundle'],
                 ],
                 'config'=>['loadSkCMSAdmin','loadCKEditor','loadDoctrineFunctions'],
@@ -291,9 +290,11 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     public function loadCKEditor()
     {
         
-        $this->skConfig['jonlil_ck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
-        $this->skConfig['skcmsck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
-        $this->skConfig['parameters']=['jonlil.ckfinder.customAuthentication'=>'%kernel.root_dir%/config/config.yml'];
+        $this->skConfig['ivory_ck_editor'] = ['default_config'=>['default'],'configs'=>['default'=>['filebrowserBrowseRoute'=>'elfinder','filebrowserBrowseRouteParameters'=>[]]]];
+        $this->skConfig['fm_elfinder'] = ['assets_path'=>'assets','instances'=>['default'=>['locale'=>'%locale%','editor'=>'ckeditor','fullscreen'=>'true','theme'=>'smoothness','include_assets'=>'true','connector'=>['debug'=>false,'roots'=>['uploads'=>['show_hidden'=>false,'driver'=>'LocalFileSystem','path'=>'uploads','upload_allow'=>['image/png', 'image/jpg', 'image/jpeg'],'upload_deny'=>['all'],'upload_max_size'=>'4M']]]]]];
+    
+
+        
                
         
     }
@@ -422,9 +423,9 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     }
     private function routeAdmin()
     {
-        $this->skRouting['skcmsck_finder']=
+        $this->skRouting['elfinder']=
                 [
-                    'resource'=>"@SKCMSCKFinderBundle/Resources/config/routing/routing.yml",
+                    'resource'=>"@FMElfinderBundle/Resources/config/routing.yml",
                     'prefix'=> '/'
                 ];
         $this->skRouting['skcms_admin']=
@@ -432,11 +433,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                     'resource'=>"@SKCMSAdminBundle/Resources/config/routing.yml",
                     'prefix'=> '/admin'
                 ];
-        $this->skRouting['ck_finder']=
-                [
-                    'resource'=>"@JonlilCKFinderBundle/Resources/config/routing/routing.yml",
-                    'prefix'=> '/ckfinder'
-                ];
+        
         
     }
     
