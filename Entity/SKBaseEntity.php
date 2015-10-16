@@ -14,7 +14,9 @@ use Gedmo\Translatable\Translatable;
  */
 class SKBaseEntity implements Translatable
 {
-    /** @ORM\Column(name="id",type="integer") */
+    /** 
+     * @ORM\Column(name="id",type="integer") 
+     */
     protected $id;
 
     /**
@@ -31,6 +33,11 @@ class SKBaseEntity implements Translatable
      * @ORM\Column(name="draft", type="boolean")
      */
     protected $draft;
+    
+    /**
+     * @ORM\Column(name="position", type="integer")
+     */
+    protected $position;
     
     /**
      *
@@ -51,6 +58,7 @@ class SKBaseEntity implements Translatable
      */
     protected $locale;
     
+    
     protected $slug;
 
     
@@ -59,6 +67,7 @@ class SKBaseEntity implements Translatable
         $this->draft = false;
         $this->creationDate = new \DateTime();
         $this->updateDate = new \DateTime();
+        $this->position = 0;
     }
 
     /**
@@ -192,5 +201,15 @@ class SKBaseEntity implements Translatable
         {
             return $this->getTitle();
         }
+    }
+    
+    public function getPosition()
+    {
+        return $this->position;
+    }
+    
+    public function setPosition($position)
+    {
+        $this->position = $position;
     }
 }

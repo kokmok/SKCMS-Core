@@ -18,6 +18,7 @@ class EntityType extends AbstractType
             ->add('slug','skscms_protecedinput',['required'=>false])
 //            ->add('content','ckfinder')
             ->add('draft',null,['required'=>false])
+                
             
         ;
     }

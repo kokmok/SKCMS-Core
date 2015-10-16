@@ -82,20 +82,15 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
             'admin' => [
                 'kernel'=>[
                     ['bundle'=>'SKCMSAdminBundle','namespace'=>'SKCMS\AdminBundle'],
-                    ['bundle'=>'SKCMSCKFinderBundle','namespace'=>'SKCMS\CKFinderBundle'],
-                    ['bundle'=>'IvoryCKEditorBundle','namespace'=>'Ivory\CKEditorBundle'],
-                    ['bundle'=>'JonlilCKFinderBundle','namespace'=>'Jonlil\CKFinderBundle'],
+                    ['bundle'=>'IvoryCKEditorBundle','namespace'=>'Ivory\CKEditorBundle'],            
+                    ['bundle'=>'FMElfinderBundle','namespace'=>'FM\ElfinderBundle'],            
                     ['bundle'=>'StofDoctrineExtensionsBundle','namespace'=>'Stof\DoctrineExtensionsBundle'],
                 ],
                 'config'=>['loadSkCMSAdmin','loadCKEditor','loadDoctrineFunctions'],
                 'route'=>['routeAdmin']
                 
             ],
-            'front'=>
-            [
-                'kernel'=>[['bundle'=>'SKCMSFrontBundle','namespace'=>'SKCMS\FrontBundle']],
-                'route'=>['routeFront']
-            ],
+            
             'user' =>
             [
                 'kernel'=>[
@@ -120,6 +115,11 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
             [
                 'kernel'=>[['bundle'=>'SKCMSShopBundle','namespace'=>'SKCMS\ShopBundle']],
                 'route'=>['routeShop']
+            ],
+            'front'=>
+            [
+                'kernel'=>[['bundle'=>'SKCMSFrontBundle','namespace'=>'SKCMS\FrontBundle']],
+                'route'=>['routeFront']
             ],
         ];
         foreach ($bundles as $bundleName => $bundle)
@@ -258,6 +258,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     
         
         ];
+        $this->skConfig['assetic']['bundles'] = ['SKCMSAdminBundle'];
         
             
     
@@ -289,9 +290,11 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     public function loadCKEditor()
     {
         
-        $this->skConfig['jonlil_ck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
-        $this->skConfig['skcmsck_finder'] = ['license'=>['key'=>'','name'=>''],'baseDir'=>"%assetic.read_from%",'baseUrl'=>"/uploads/",'service'=>'php'];
-        $this->skConfig['parameters']=['jonlil.ckfinder.customAuthentication'=>'%kernel.root_dir%/...path your custom config.php or any other file'];
+        $this->skConfig['ivory_ck_editor'] = ['default_config'=>['default'],'configs'=>['default'=>['filebrowserBrowseRoute'=>'elfinder','filebrowserBrowseRouteParameters'=>[]]]];
+        $this->skConfig['fm_elfinder'] = ['assets_path'=>'assets','instances'=>['default'=>['locale'=>'%locale%','editor'=>'ckeditor','fullscreen'=>'true','theme'=>'smoothness','include_assets'=>'true','connector'=>['debug'=>false,'roots'=>['uploads'=>['show_hidden'=>false,'driver'=>'LocalFileSystem','path'=>'uploads','upload_allow'=>['image/png', 'image/jpg', 'image/jpeg'],'upload_deny'=>['all'],'upload_max_size'=>'4M']]]]]];
+    
+
+        
                
         
     }
@@ -309,8 +312,9 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     }
     private function setStof()
     {
-        $stof = ['orm'=>['default'=>['sluggable'=>true,'translatable'=>true]]];
-        $this->mergeOrCreate('stof_doctrine_extensions', $stof);
+        $this->skConfig['stof_doctrine_extensions']['orm']['default']['sluggable'] = true;
+//        $stof = ['orm'=>['default'=>['sluggable'=>true,'translatable'=>true]]];
+//        $this->mergeOrCreate('stof_doctrine_extensions', $stof);
     }
     
     private function loadDoctrineFunctions()
@@ -363,7 +367,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     {
          $this->skRouting['skcms_shop']=
                 [
-                    'ressource'=>"@SKCMSShopBundle/Resources/config/routing.yml",
+                    'resource'=>"@SKCMSShopBundle/Resources/config/routing.yml",
                     'prefix'=> '/'
                 ];
     }
@@ -372,7 +376,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     {
          $this->skRouting['skcms_tracking']=
                 [
-                    'ressource'=>"@SKCMSTrackingBundle/Resources/config/routing.yml",
+                    'resource'=>"@SKCMSTrackingBundle/Resources/config/routing.yml",
                     'prefix'=> '/'
                 ];
     }
@@ -380,22 +384,22 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     {
          $this->skRouting['fos_user_security']=
                 [
-                    'ressource'=>"@FOSUserBundle/Resources/config/routing/security.xml",
+                    'resource'=>"@FOSUserBundle/Resources/config/routing/security.xml",
                     'prefix'=> '/'
                 ];
          $this->skRouting['fos_user_profile']=
                 [
-                    'ressource'=>"@FOSUserBundle/Resources/config/routing/profile.xml",
+                    'resource'=>"@FOSUserBundle/Resources/config/routing/profile.xml",
                     'prefix'=> '/profile'
                 ];
          $this->skRouting['fos_user_resetting']=
                 [
-                    'ressource'=>"@FOSUserBundle/Resources/config/routing/resetting.xml",
+                    'resource'=>"@FOSUserBundle/Resources/config/routing/resetting.xml",
                     'prefix'=> '/resetting'
                 ];
          $this->skRouting['fos_user_change_password']=
                 [
-                    'ressource'=>"@FOSUserBundle/Resources/config/routing/change_password.xml",
+                    'resource'=>"@FOSUserBundle/Resources/config/routing/change_password.xml",
                     'prefix'=> '/profile'
                 ];
     }
@@ -403,7 +407,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     {
         $this->skRouting['skcms_front']=
                 [
-                    'ressource'=>"@SKCMSFrontBundle/Resources/config/routing.yml",
+                    'resource'=>"@SKCMSFrontBundle/Resources/config/routing.yml",
                     'prefix'=> '/'
                 ];
         
@@ -412,28 +416,24 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     {
         $this->skRouting['skcms_contact']=
                 [
-                    'ressource'=>"@SKCMSContactBundle/Resources/config/routing-skcmsContact.yml",
+                    'resource'=>"@SKCMSContactBundle/Resources/config/routing-skcmsContact.yml",
                     'prefix'=> '/'
                 ];
                 
     }
     private function routeAdmin()
     {
-        $this->skRouting['skcmsck_finder']=
+        $this->skRouting['elfinder']=
                 [
-                    'ressource'=>"@SKCMSCKFinderBundle/Resources/config/routing/routing.yml",
+                    'resource'=>"@FMElfinderBundle/Resources/config/routing.yml",
                     'prefix'=> '/'
                 ];
         $this->skRouting['skcms_admin']=
                 [
-                    'ressource'=>"@SKCMSAdminBundle/Resources/config/routing.yml",
-                    'prefix'=> '/'
+                    'resource'=>"@SKCMSAdminBundle/Resources/config/routing.yml",
+                    'prefix'=> '/admin'
                 ];
-        $this->skRouting['ck_finder']=
-                [
-                    'ressource'=>"@JonlilCKFinderBundle/Resources/config/routing/routing.yml",
-                    'prefix'=> '/ckfinder'
-                ];
+        
         
     }
     

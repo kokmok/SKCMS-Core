@@ -6,28 +6,20 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class PageType extends EntityType
+class OpeningHoursType extends \SKCMS\CoreBundle\Form\EntityType
 {
-    public function __construct()
-    {
-        
-    }
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+	parent::buildForm($builder, $options);
         $builder
-            ->add('title')
-            
-            ->add('template')
-            ->add('lists')
-            ->add('menus')
-            ->add('slug','skscms_protecedinput',['required'=>false])
-            ->add('minRoleAccess','choice',['choices'=>['ANON'=>'anonyme','ROLE_USER'=>'user','ROLE_CLIENT'=>'client','ROLE_ADMIN'=>'admin']])
-            ->add('redirectRoute',null,['required'=>false])
-            ->add('forward',null,['required'=>false])
+            ->add('name')
+            ->add('text')
+            ->add('openAt')
+            ->add('closeAt')
             
         ;
     }
@@ -38,7 +30,7 @@ class PageType extends EntityType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'SKCMS\CoreBundle\Entity\SKBasePage'
+            'data_class' => 'SKCMS\CoreBundle\Entity\OpeningHours'
         ));
     }
 
@@ -47,6 +39,6 @@ class PageType extends EntityType
      */
     public function getName()
     {
-        return 'skcms_corebundle_page';
+        return 'skcms_corebundle_openinghours';
     }
 }

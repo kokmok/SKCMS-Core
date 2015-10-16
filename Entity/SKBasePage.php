@@ -39,12 +39,40 @@ class SKBasePage extends SKBaseEntity
      * @ORM\ManyToMany(targetEntity = "SKCMS\CoreBundle\Entity\EntityList")
      */
     protected $lists;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity = "SKCMS\CoreBundle\Entity\MenuElement")
+     */
+    protected $menus;
+    
+    /**
+     *
+     * @ORM\Column(name="minRoleAccess",type="string",length=255,nullable=true)
+     */
+    protected $minRoleAccess;
+    
+    /**
+     *
+     * @ORM\Column(name="redirectRoute",type="string",length=255,nullable=true)
+     */
+    protected $redirectRoute;
+    
+    /**
+     *
+     * @ORM\Column(name="forward",type="boolean",nullable=true)
+     */
+    protected $forward;
+    
+   
 
     
     public function __construct()
     {
         parent::__construct();
-        $this->list = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->lists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->menus = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->minRoleAccess = 'ANON';
+        $this->forward = false;
     }
     
     public function __toString()
@@ -88,6 +116,7 @@ class SKBasePage extends SKBaseEntity
     public function setSlug($slug)
     {
         $this->slug = $slug;
+        return $this;
     }
     
     public function getSlug()
@@ -98,6 +127,7 @@ class SKBasePage extends SKBaseEntity
     public function setTemplate(PageTemplate $template)
     {
         $this->template = $template;
+        return $this;
     }
     
     public function getTemplate()
@@ -108,20 +138,72 @@ class SKBasePage extends SKBaseEntity
     public function addList(EntityList $list)
     {
         $this->lists->add($template);
+        return $this;
     }
     public function removeList(EntityList $list)
     {
         $this->lists->remove($template);
+        return $this;
     }
     public function setLists(\Doctrine\Common\Collections\ArrayCollection $list)
     {
         $this->lists = $list;
+        return $this;
     }
     
     public function getLists()
     {
         return $this->lists;
     }
+    
+    public function addMenu(MenuElement $menu)
+    {
+        $this->menus->add($menu);
+        return $this;
+    }
+    public function removeMenu(MenuElement $menu)
+    {
+        $this->menus->remove($menu);
+        return $this;
+    }
+    public function getMenus()
+    {
+        return $this->menus;
+        
+    }
+    
+    public function getMinRoleAccess()
+    {
+        return $this->minRoleAccess;
+    }
+    
+    public function setMinRoleAccess($role)
+    {
+        $this->minRoleAccess = $role;
+        return $this;
+    }
+    public function getRedirectRoute()
+    {
+        return $this->redirectRoute;
+    }
+    
+    public function setRedirectRoute($redirectRoute)
+    {
+        $this->redirectRoute = $redirectRoute;
+        return $this;
+    }
+    
+    public function getForward()
+    {
+        return $this->forward;
+    }
+    
+    public function setForward($forward)
+    {
+        $this->forward = $forward;
+        return $this;
+    }
+    
     
     
     

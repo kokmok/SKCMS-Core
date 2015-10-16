@@ -39,10 +39,13 @@ class SlugListener
         
         foreach ($uow->getScheduledEntityInsertions() as $entity) 
         {
-            if ($entity instanceof SKBaseEntity)
+            if (is_subclass_of($entity, '\SKCMS\CoreBundle\Entity\SKBaseEntity'))
             {
                 $entity = $this->checkTranslatedSlug($entity);
+               
             }
+            
+            
             
             
         }
@@ -51,12 +54,12 @@ class SlugListener
         {
 //            //dump($entity);
 //                die();
-            if ($entity instanceof SKBaseEntity)
+//            if ($entity instanceof SKBaseEntity)
+            if (is_subclass_of($entity, '\SKCMS\CoreBundle\Entity\SKBaseEntity'))
             {
                 $entity = $this->checkTranslatedSlug($entity);
                 
-//                //dump($entity);
-//                die();
+                
             }
         }
         
@@ -88,17 +91,28 @@ class SlugListener
         
         $repo = $this->em->getRepository('SKCMS\CoreBundle\Entity\Translation\EntityTranslation');
         $translationEntity = $repo->findObjectBySlug($slug,$this->locale);
+//        
+//        dump($entity);
+//        dump($translationEntity);
+//        dump(get_class($entity));
+//        dump('\\'.$translationEntity->getObjectClass());
+//        die();
         
-        
-        if (null === $translationEntity || ($translationEntity->getForeignKey()==$entity->getId() && '\\'.$translationEntity->getObjectClass() == get_class($entity)))
+//        if (null === $translationEntity || ($translationEntity->getForeignKey()==$entity->getId() && '\\'.$translationEntity->getObjectClass() == get_class($entity)))
+        if (null === $translationEntity || ($translationEntity->getForeignKey()==$entity->getId() && $translationEntity->getObjectClass() == get_class($entity)))
         {
+            if ($loopIndex>0)
+            {
+                $entity->setSlug($slug);
+                $this->em->persist($entity);
+                $this->em->flush();
+            }
             
-            $entity->setSlug($slug);
-           
             return $entity;
         }
         else
         { 
+//            die('loop');
             return $this->checkTranslatedSlug($entity,$loopIndex+1);
         }
         

@@ -21,7 +21,7 @@ services:
         class: SKCMS\CoreBundle\Listener\SlugListener
         arguments: [@service_container]
         tags:
-            - { name: doctrine.event_listener, event: onFlush }
+            - { name: doctrine.event_listener, event: onFlush ,priority: 2000}
             
     skcms_core.listsutils:
         class: SKCMS\CoreBundle\Service\ListUtils
@@ -41,7 +41,11 @@ services:
         
     skcms_core.classmodifier:
         class: SKCMS\CoreBundle\Service\ClassModifier
-        
+    
+    skcms_core.entityreferenceloader:
+        class: SKCMS\CoreBundle\Listener\EntityReferenceLoader
+        tags:
+            - { name: doctrine.event_listener, event: postLoad }
     
         
 #    skcms_core.example:

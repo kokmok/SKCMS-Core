@@ -28,14 +28,14 @@ class ListUtils
         {
             $locale = $this->container->get('request')->getLocale();
         
-    //        die('locale'.$locale);
+            
             $lists = [];
 
             foreach ($page->getLists() as $list)
             {
-
+                
                 $entityParams = $entitiesParams[$list->getEntity()];
-                $repo = $this->em->getRepository($entityParams['bundle'].'Bundle:'.$list->getEntity());
+                $repo = $this->em->getRepository($entityParams['class']);
     //            $repo->setDefaultLocale($locale);
                 
                 $entities = $repo->findBy([],[$list->getOrderBy()=>$list->getOrder()],$list->getLimit(),null,$locale);

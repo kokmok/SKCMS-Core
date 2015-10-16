@@ -144,6 +144,7 @@ class TranslatableRepository extends EntityRepository
         
         $locale = null === $locale ? $this->defaultLocale : $locale;
 
+        
         $query = $qb->getQuery();
 
         $query->setHint(
@@ -153,6 +154,7 @@ class TranslatableRepository extends EntityRepository
 
         $query->setHint(TranslatableListener::HINT_TRANSLATABLE_LOCALE, $locale);
         $this->sql =$query->getSQL();
+        
         $this->queryParams = $query->getParameters();
         return $query;
     }

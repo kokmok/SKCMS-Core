@@ -12,20 +12,25 @@ class MenuElementType extends AbstractType
     private $pagesId;
     private $groups;
     
+    private $entities;
+    
     public function __construct($entities)
     {
+        
         $this->groups = [];
         foreach ($entities as $entityGroupName => $entityGroup)
         {
             $this->groups[$entityGroupName] = [];
             foreach ($entityGroup as $entity)
             {
-                $this->groups[$entityGroupName][$entity->getId()] = $entity; 
+                $this->entities[$entity->getId()] = $entity->__toString();
+                $this->groups[$entityGroupName][$entity->getId()] = $entity->__toString(); 
+//                $this->groups[$entityGroupName][] = $entity; 
             }
             
         }
         
-        
+       
     }
     
     /**
@@ -38,7 +43,8 @@ class MenuElementType extends AbstractType
             ->add('name')
             ->add('textId')
             ->add('position')
-            ->add('entityId','choice',['choices'=>$this->groups])
+//            ->add('entityId','menuelementchildrentype',['choices'=>$this->groups])
+//            ->add('entityId','choice',['choices'=>$this->entities])
             ->add('parent')
         ;
     }

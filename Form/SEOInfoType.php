@@ -6,12 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class PageType extends EntityType
+class SEOInfoType extends AbstractType
 {
-    public function __construct()
-    {
-        
-    }
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -19,16 +15,13 @@ class PageType extends EntityType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title')
-            
-            ->add('template')
-            ->add('lists')
-            ->add('menus')
-            ->add('slug','skscms_protecedinput',['required'=>false])
-            ->add('minRoleAccess','choice',['choices'=>['ANON'=>'anonyme','ROLE_USER'=>'user','ROLE_CLIENT'=>'client','ROLE_ADMIN'=>'admin']])
-            ->add('redirectRoute',null,['required'=>false])
-            ->add('forward',null,['required'=>false])
-            
+            ->add('description')
+            ->add('keywords')
+            ->add('creationDate')
+            ->add('updateDate')
+            ->add('draft')
+            ->add('userCreate')
+            ->add('userUpdate')
         ;
     }
     
@@ -38,7 +31,7 @@ class PageType extends EntityType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'SKCMS\CoreBundle\Entity\SKBasePage'
+            'data_class' => 'SKCMS\CoreBundle\Entity\SEOInfo'
         ));
     }
 
@@ -47,6 +40,6 @@ class PageType extends EntityType
      */
     public function getName()
     {
-        return 'skcms_corebundle_page';
+        return 'skcms_corebundle_seoinfo';
     }
 }

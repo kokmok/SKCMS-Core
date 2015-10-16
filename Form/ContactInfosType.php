@@ -23,6 +23,7 @@ class ContactInfosType extends AbstractType
             ->add('postalCode')
             ->add('country')
             ->add('facebookLink','url',['required'=>false])
+//            ->add('openingHours',new OpeningHoursType())
         ;
     }
     
