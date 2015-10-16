@@ -15,8 +15,9 @@ class SKImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('picture','ckfinderpopupsimple')
+            ->add('picture','elfinder', array('instance'=>'form', 'enable'=>true))
         ;
+        
     }
     
     /**
