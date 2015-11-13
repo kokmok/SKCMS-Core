@@ -152,10 +152,13 @@ class SKImage
         return $this->optimalPicture;
     }
     
-    public function getThumb($width,$height)
+    public function getThumb($width,$height=0)
     {
+        
         if (!file_exists($this->getThumbAbsolutePath($width,$height)))
         {
+//            dump($this->picture);
+//            die($this->getThumbAbsolutePath($width,$height));  
             $this->generateTransformedImage($width,$height);
         }
         
@@ -240,27 +243,27 @@ class SKImage
         
         @imagecopyresampled($transformedImage, $originalImage, 0, 0, $x, $y, $newWidth, $newHeight, $copiedWidth, $copiedHeight);
         
-        if (!is_dir($this->getImageFullRoot().$this->getTransformedDir($width,$height)))
+        if (!is_dir($this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height)))
         {
-            mkdir($this->getImageFullRoot().$this->getTransformedDir($width,$height));
+            mkdir($this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height));
         }
-        chmod($this->getImageFullRoot().$this->getTransformedDir($width,$height), 0777);
+        chmod($this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height), 0777);
         
         switch ($mime)
         {
-                case 'image/gif' : @imagegif($transformedImage,$this->getImageFullRoot().$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']));
+                case 'image/gif' : @imagegif($transformedImage,$this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']));
                 break;
-                case 'image/jpeg' : imagejpeg($transformedImage,$this->getImageFullRoot().$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']), 90);
+                case 'image/jpeg' : imagejpeg($transformedImage,$this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']), 90);
                 break;
-                case 'image/png' :  @imagepng($transformedImage,$this->getImageFullRoot().$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']), 9);
+                case 'image/png' :  @imagepng($transformedImage,$this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']), 9);
                 break;
         }
         
         imagedestroy($originalImage);
         imagedestroy($transformedImage);
         
-        chmod($this->getImageFullRoot().$this->getTransformedDir($width,$height), 0755);
-        chmod($this->getImageFullRoot().$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']), 0644);
+        chmod($this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height), 0755);
+        chmod($this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']), 0644);
         
         return $this->getTransformedDir($width,$height).'/'.$pathInfo['basename'];
         
@@ -302,10 +305,11 @@ class SKImage
     protected function getThumbAbsolutePath($width,$height)
     {
         $pathInfo = pathinfo($this->picture);
-        return $this->getImageFullRoot().$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']);
+        return $this->getImageFullRoot().'/'.$this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']);
     }
     protected function getThumbPath($width,$height)
     {
+        
         $pathInfo = pathinfo($this->picture);
         return $this->getTransformedDir($width,$height).'/'.urldecode($pathInfo['basename']);
     }
@@ -338,12 +342,12 @@ class SKImage
     
     protected function getImageFullRoot()
     {
-        return $_SERVER['DOCUMENT_ROOT'];
+        return __DIR__.'/../../../../../../web';
     }
     
     protected function getAbsolutePicturePath()
     {
-        return $this->getImageFullRoot().urldecode($this->getPicture());
+        return $this->getImageFullRoot().'/'.urldecode($this->getPicture());
     }
     
     

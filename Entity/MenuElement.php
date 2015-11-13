@@ -89,6 +89,7 @@ class MenuElement implements Translatable
 
     /**
      * @ORM\OneToMany(targetEntity="MenuElement", mappedBy="parent")
+     * @ORM\OrderBy({"position" = "ASC"})
      * 
      */
     protected $children;
