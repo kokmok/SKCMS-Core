@@ -64,7 +64,8 @@ class SKEntityRepository extends TranslatableRepository
                 ->setParameter('id', $id);
         
         $results = $this->getResult($qb,$locale);
-        return $results[0];
+
+        return count($results)?$results[0]:null;
     }
     
     public function findLastSortableIndex($field)
