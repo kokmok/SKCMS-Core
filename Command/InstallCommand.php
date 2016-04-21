@@ -140,16 +140,14 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                 {
                     foreach ($bundle['config'] as $configMethod)
                     {
-                        call_user_method($configMethod, $this);
-
+                        call_user_func([$this, $configMethod]);
                     }
                 }
                 if (array_key_exists('route', $bundle) && is_array($bundle['route']))
                 {
                     foreach ($bundle['route'] as $routeMethod)
                     {
-                        call_user_method($routeMethod, $this);
-
+                        call_user_func([$this,$routeMethod]);
                     }
                 }
                 
