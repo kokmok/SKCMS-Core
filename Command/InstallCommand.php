@@ -288,7 +288,7 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
     public function loadCKEditor()
     {
         
-        $this->skConfig['ivory_ck_editor'] = ['default_config'=>['default'],'configs'=>['default'=>['filebrowserBrowseRoute'=>'elfinder','filebrowserBrowseRouteParameters'=>[]]]];
+        $this->skConfig['ivory_ck_editor'] = ['default_config'=>'default','configs'=>['default'=>['filebrowserBrowseRoute'=>'elfinder','filebrowserBrowseRouteParameters'=>[]]]];
         $this->skConfig['fm_elfinder'] = ['assets_path'=>'assets','instances'=>['default'=>['locale'=>'%locale%','editor'=>'ckeditor','fullscreen'=>'true','theme'=>'smoothness','include_assets'=>'true','connector'=>['debug'=>false,'roots'=>['uploads'=>['show_hidden'=>false,'driver'=>'LocalFileSystem','path'=>'uploads','upload_allow'=>['image/png', 'image/jpg', 'image/jpeg'],'upload_deny'=>['all'],'upload_max_size'=>'4M']]]]]];
     
 
