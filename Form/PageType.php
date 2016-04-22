@@ -5,6 +5,8 @@ namespace SKCMS\CoreBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use SKCMS\CoreBundle\Entity\EntityList;
+use SKCMS\CoreBundle\Entity\Menu;
 
 class PageType extends EntityType
 {
@@ -20,10 +22,10 @@ class PageType extends EntityType
     {
         $builder
             ->add('title')
-            
+
             ->add('template')
-            ->add('lists')
-            ->add('menus')
+            ->add('lists','entity',['class'=>EntityList::class,'required'=>false,'multiple'=>true])
+            ->add('menus','entity',['class'=>Menu::class,'required'=>false,'multiple'=>true])
             ->add('slug','skscms_protecedinput',['required'=>false])
             ->add('minRoleAccess','choice',['choices'=>['ANON'=>'anonyme','ROLE_USER'=>'user','ROLE_CLIENT'=>'client','ROLE_ADMIN'=>'admin']])
             ->add('redirectRoute',null,['required'=>false])

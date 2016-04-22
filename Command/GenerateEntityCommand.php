@@ -63,12 +63,12 @@ class GenerateEntityCommand extends GenerateDoctrineEntityCommand
         $classModifier->privateToProtected($entityPath);
         $output->writeln(sprintf('SKize entity : '. $entity));
 
-        if ($input->getOption('with-repository') == true)
-        {
-            $repositoryPath = $bundle->getPath().'/Entity/'.str_replace('\\', '/', $entity).'Repository.php';
+//        if ($input->getOption('with-repository') == true)
+//        {
+            $repositoryPath = $bundle->getPath().'/Repository/'.str_replace('\\', '/', $entity).'Repository.php';
             $output->writeln(sprintf('SKize repository'. $repositoryPath));
             $classModifier->addExtends($repositoryPath, $calledClass::REPO_PARENT,true);
-        }
+//        }
         
         return;
         //Add to menu configuration
