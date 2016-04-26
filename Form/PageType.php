@@ -22,8 +22,7 @@ class PageType extends EntityType
     {
         $builder
             ->add('title')
-
-            ->add('template')
+            ->add('template','entity',['class'=>PageTemplate::class,'required'=>false])
             ->add('lists','entity',['class'=>EntityList::class,'required'=>false,'multiple'=>true])
             ->add('menus','entity',['class'=>Menu::class,'required'=>false,'multiple'=>true])
             ->add('slug','skscms_protecedinput',['required'=>false])
