@@ -2,6 +2,7 @@
 
 namespace SKCMS\CoreBundle\Form;
 
+use SKCMS\CoreBundle\Entity\PageTemplate;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -12,7 +13,7 @@ class PageType extends EntityType
 {
     public function __construct()
     {
-        
+
     }
     /**
      * @param FormBuilderInterface $builder
@@ -22,6 +23,7 @@ class PageType extends EntityType
     {
         $builder
             ->add('title')
+
             ->add('template','entity',['class'=>PageTemplate::class,'required'=>false])
             ->add('lists','entity',['class'=>EntityList::class,'required'=>false,'multiple'=>true])
             ->add('menus','entity',['class'=>Menu::class,'required'=>false,'multiple'=>true])
@@ -29,10 +31,12 @@ class PageType extends EntityType
             ->add('minRoleAccess','choice',['choices'=>['ANON'=>'anonyme','ROLE_USER'=>'user','ROLE_CLIENT'=>'client','ROLE_ADMIN'=>'admin']])
             ->add('redirectRoute',null,['required'=>false])
             ->add('forward',null,['required'=>false])
-            
+            ->add('seoTitle',null,['required'=>false])
+            ->add('seoDescription','textarea',['required'=>false])
+
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
