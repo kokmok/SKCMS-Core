@@ -13,7 +13,7 @@ class PageType extends EntityType
 {
     public function __construct()
     {
-
+        
     }
     /**
      * @param FormBuilderInterface $builder
@@ -36,7 +36,7 @@ class PageType extends EntityType
 
         ;
     }
-
+    
     /**
      * @param OptionsResolverInterface $resolver
      */

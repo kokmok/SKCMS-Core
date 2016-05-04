@@ -57,6 +57,13 @@ class SKEntityRepository extends TranslatableRepository
         return $this->find($id,$locale);
     }
 
+    public function count(){
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('COUNT (p.id)');
+
+        return $this->getScalarResult($qb);
+
+    }
     public function find($id,$locale = null)
     {
         $qb = $this->createQueryBuilder('p');

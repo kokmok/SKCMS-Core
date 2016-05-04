@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class SKImageType extends AbstractType
 {
-    /**
+        /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -17,9 +17,9 @@ class SKImageType extends AbstractType
         $builder
             ->add('picture','elfinder', array('instance'=>'form', 'enable'=>true,'label'=>'Selectionnez une image'))
         ;
-
+        
     }
-
+    
     /**
      * @param OptionsResolverInterface $resolver
      */

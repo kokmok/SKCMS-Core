@@ -14,15 +14,17 @@ class EntityListType extends AbstractType
      */
     
     private $configParams;
+    private $configModules;
     private $entityValues;
     private $orderBy;
     
-    public function __construct($configParams)
+    public function __construct($configParams,$configModules)
     {
         $this->entityValues = [];
-        $this->orderBy = ['RANDOM' => 'Random'];
+        $this->orderBy = [];
 //        die(print_r($configParams,true));
         $this->configParams = $configParams;
+        $this->configModules= $configModules;
         $this->configValues();
     }
     
@@ -37,6 +39,10 @@ class EntityListType extends AbstractType
                 $this->orderBy[$configName][$properties['dataName']] = $properties['beautyName'];
             }
         }
+        if ($this->configModules['blog']['enabled']){
+            $this->entityValues['BlogPost'] = 'Blog Post';
+        }
+
         
     }
     

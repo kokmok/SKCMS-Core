@@ -42,11 +42,13 @@ class SKBaseEntity implements Translatable
     /**
      *
      *  @ORM\ManyToOne(targetEntity="SKCMS\UserBundle\Entity\User")
+     *  @Gedmo\Blameable(on="create")
      */
     protected $userCreate;
     /**
      *
      *  @ORM\ManyToOne(targetEntity="SKCMS\UserBundle\Entity\User")
+     * @Gedmo\Blameable(on="update")
      */
     protected $userUpdate;
     
@@ -193,14 +195,16 @@ class SKBaseEntity implements Translatable
     
     public function __toString()
     {
-        if (property_exists($this, 'name'))
+        if (property_exists($this, 'name') && $this->getName() !==null)
         {
-            return $this->getName();
+            return $this->getName() !==null ? $this->getName() : '';
         }
-        else if (property_exists($this, 'title'))
+        else if (property_exists($this, 'title') && $this->getTitle() !==null)
         {
-            return $this->getTitle();
+            return $this->getTitle()!==null ? $this->getTitle() : '';
         }
+
+        return '';
     }
     
     public function getPosition()
