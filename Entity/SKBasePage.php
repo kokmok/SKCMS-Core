@@ -63,20 +63,7 @@ class SKBasePage extends SKBaseEntity
      */
     protected $forward;
 
-    /**
-     *
-     * @ORM\Column(type="string",nullable=true)
-     * @Gedmo\Translatable
-     */
-    protected $SeoTitle;
-
-
-    /**
-     *
-     * @ORM\Column(type="text",nullable=true)
-     * @Gedmo\Translatable
-     */
-    protected $SeoDescription;
+   
     
    
 
@@ -217,37 +204,8 @@ class SKBasePage extends SKBaseEntity
     }
 
 
-    /**
-     * @return mixed
-     */
-    public function getSeoTitle()
-    {
-        return $this->SeoTitle;
-    }
 
-    /**
-     * @param mixed $SeoTitle
-     */
-    public function setSeoTitle($SeoTitle)
-    {
-        $this->SeoTitle = $SeoTitle;
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getSeoDescription()
-    {
-        return $this->SeoDescription;
-    }
-
-    /**
-     * @param mixed $SeoDescription
-     */
-    public function setSeoDescription($SeoDescription)
-    {
-        $this->SeoDescription = $SeoDescription;
-    }
 
 
 

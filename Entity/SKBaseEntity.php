@@ -63,6 +63,21 @@ class SKBaseEntity implements Translatable
     
     protected $slug;
 
+    /**
+     *
+     * @ORM\Column(type="string",nullable=true)
+     * @Gedmo\Translatable
+     */
+    protected $SeoTitle;
+
+
+    /**
+     *
+     * @ORM\Column(type="text",nullable=true)
+     * @Gedmo\Translatable
+     */
+    protected $SeoDescription;
+
     
     public function __construct()
     {
@@ -215,5 +230,38 @@ class SKBaseEntity implements Translatable
     public function setPosition($position)
     {
         $this->position = $position;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSeoTitle()
+    {
+        return $this->SeoTitle;
+    }
+
+    /**
+     * @param mixed $SeoTitle
+     */
+    public function setSeoTitle($SeoTitle)
+    {
+        $this->SeoTitle = $SeoTitle;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getSeoDescription()
+    {
+        return $this->SeoDescription;
+    }
+
+    /**
+     * @param mixed $SeoDescription
+     */
+    public function setSeoDescription($SeoDescription)
+    {
+        $this->SeoDescription = $SeoDescription;
     }
 }

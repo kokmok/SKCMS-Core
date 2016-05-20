@@ -31,8 +31,7 @@ class PageType extends EntityType
             ->add('minRoleAccess','choice',['choices'=>['ANON'=>'anonyme','ROLE_USER'=>'user','ROLE_CLIENT'=>'client','ROLE_ADMIN'=>'admin']])
             ->add('redirectRoute',null,['required'=>false])
             ->add('forward',null,['required'=>false])
-            ->add('seoTitle',null,['required'=>false])
-            ->add('seoDescription','textarea',['required'=>false])
+            
 
         ;
     }
