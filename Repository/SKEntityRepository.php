@@ -123,7 +123,7 @@ class SKEntityRepository extends TranslatableRepository
         return $this->getResult($qb,$locale);
     }
     
-    public function findById(array $criteria, mixed $orderBy = null,$locale = null)
+    public function findById(array $criteria, $orderBy = null,$locale = null)
     {
         $qb = $this->createQueryBuilder('p');
         $qb->where($qb->expr()->in('p.id',$criteria));
