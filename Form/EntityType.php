@@ -16,6 +16,7 @@ class EntityType extends AbstractType
     {
         $builder
             ->add('slug','skscms_protecedinput',['required'=>false])
+//            ->add('content','ckfinder')
             ->add('draft','checkbox',['required'=>false])
             ->add('seoTitle',null,['required'=>false])
             ->add('seoDescription','textarea',['required'=>false])

@@ -1,6 +1,7 @@
 <?php
 namespace SKCMS\CoreBundle\Listener;
 
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use SKCMS\CoreBundle\Entity\SKBaseEntity;
 /**
@@ -24,6 +25,19 @@ class SlugListener
             $this->locale = $container->get('request')->getLocale();
         }
         
+    }
+
+    public function preRemove(LifecycleEventArgs $args){
+        $entity = $args->getEntity();
+        $em = $args->getEntityManager();
+        $uow = $em->getUnitOfWork();
+        if ($entity instanceof SKBaseEntity){
+            $repo = $em->getRepository('SKCMSCoreBundle:Translation\EntityTranslation');
+            $translations = $repo->findBy(['foreignKey'=>$entity->getId(),'objectClass'=>get_class($entity)]);
+            foreach ($translations as $translation){
+                $uow->scheduleForDelete($translation);
+            }
+        }
     }
     
     public function onFlush(OnFlushEventArgs $eventArgs)

@@ -248,7 +248,6 @@ class SKBaseEntity implements Translatable
         $this->SeoTitle = $SeoTitle;
     }
 
-
     /**
      * @return mixed
      */

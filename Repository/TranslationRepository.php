@@ -14,20 +14,20 @@ class TranslationRepository extends EntityRepository
 {
     public function search($keyWord,$className,$fields,$_locale,$tolerance = 3){
         $qb = $this->createQueryBuilder('e')
-            ->select('e.foreignKey')
-            ->where('e.locale=:locale')
-            ->setParameter('locale',$_locale);
+                    ->select('e.foreignKey')
+                    ->where('e.locale=:locale')
+                    ->setParameter('locale',$_locale);
 
         $orX = $qb->expr()->orX();
         foreach ($fields as $field){
             $andX = $qb->expr()->andX();
             $andX   ->add('e.field=:'.$field)
-                ->add(
-                    $qb->expr()->orX(
-                        $qb->expr()->lte('LEVENSHTEIN(e.content,:searchString)',$tolerance),
-                        $qb->expr()->like('e.content',"'%".$keyWord."%'")
+                    ->add(
+                        $qb->expr()->orX(
+                            $qb->expr()->lte('LEVENSHTEIN(e.content,:searchString)',$tolerance),
+                            $qb->expr()->like('e.content',"'%".$keyWord."%'")
+                        )
                     )
-                )
             ;
             $orX->add($andX);
             $qb->setParameter('searchString',$keyWord);
