@@ -13,6 +13,9 @@ class SitemapController extends Controller
         foreach ($entitiesParams as $entityParam){
             $entities = array_merge($entities, $this->getDoctrine()->getManager()->getRepository($entityParam['class'])->findAll());
         }
+        if (class_exists('SKCMS\BlogBundle\SKCMSBlogBundle')){
+            $entities = array_merge($entities, $this->getDoctrine()->getManager()->getRepository('SKCMSBlogBundle:BlogPost')->findAll());
+        }
         return $this->render('SKCMSCoreBundle::sitemap.xml.twig', array('entities' => $entities));
     }
 }
