@@ -431,6 +431,11 @@ class InstallCommand extends \Sensio\Bundle\GeneratorBundle\Command\GeneratorCom
                     'resource'=>"@SKCMSAdminBundle/Resources/config/routing.yml",
                     'prefix'=> '/admin'
                 ];
+        $this->skRouting['skcms_core']=
+                [
+                    'resource'=>"@SKCMSCoreBundle/Resources/config/routing.yml",
+                    'prefix'=> '/'
+                ];
         
         
     }
