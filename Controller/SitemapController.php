@@ -4,7 +4,7 @@ namespace SKCMS\CoreBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DefaultController extends Controller
+class SitemapController extends Controller
 {
     public function sitemapAction()
     {
