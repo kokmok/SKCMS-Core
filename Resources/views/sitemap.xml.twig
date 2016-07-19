@@ -6,7 +6,7 @@
 
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-    {% for entity in entities %}
+    {% for entity in entities if entity.slug is defined and entity.slug is not null and entity.slug|length%}
         <url>
 
             <loc>{{ entity|skEntityPath('html',false,true) }}</loc>

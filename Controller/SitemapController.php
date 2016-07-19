@@ -8,7 +8,7 @@ class SitemapController extends Controller
 {
     public function sitemapAction()
     {
-        $entitiesParams = $this->get('skcms_admin.entities');
+        $entitiesParams = $this->getParameter('skcms_admin.entities');
         $entities = [];
         foreach ($entitiesParams as $entityParam){
             $entities = array_merge($entities, $this->getDoctrine()->getManager()->getRepository($entityParam['class'])->findAll());
