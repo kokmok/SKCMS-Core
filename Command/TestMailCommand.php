@@ -17,7 +17,7 @@ class TestMailCommand extends ContainerAwareCommand
     {
         $this
             ->setName('skcms_core:test_mail')
-            ->addArgument(self::ARGUMENT_EMAIL,InputArgument::REQUIRED,'',"jona@solid-kiss.be")
+            ->addArgument(self::ARGUMENT_EMAIL,InputArgument::OPTIONAL,'',"jona@solid-kiss.be")
             ->setDescription('Hello PhpStorm');
     }
 
