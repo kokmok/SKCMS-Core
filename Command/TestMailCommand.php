@@ -27,7 +27,7 @@ class TestMailCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $message = new \Swift_Message('Hello Email');
-        $message->setFrom($this->getContainer()->getParameter('mailer_from'))
+        $message->setFrom($this->getContainer()->getParameter('mailer_user'))
             ->setTo($input->getArgument(self::ARGUMENT_EMAIL))
             ->setBody('This is just there to validate skcms email sending feature');
         
