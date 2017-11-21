@@ -50,6 +50,7 @@ class SKEntityRepository extends TranslatableRepository
 
     public function findForAdmin($id,$locale = null)
     {
+        $this->allowDraftEntities();
         return $this->find($id,$locale);
     }
     public function findFull($id,$locale = null)
