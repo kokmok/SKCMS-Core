@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="SKCMS\CoreBundle\Entity\SKImageRepository")
  * @ORM\HasLifecycleCallbacks
  */
-class SKImage
+class SKImage implements \ArrayAccess
 {
     /**
      * @var integer
@@ -363,5 +363,25 @@ class SKImage
             return urldecode($this->picture);
         }
         
+    }
+
+    public function offsetExists($offset)
+    {
+        return $offset>1;
+    }
+
+    public function offsetGet($offset)
+    {
+        return $offset == 0 ? $this->__toString() : null;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        // TODO: Implement offsetSet() method.
+    }
+
+    public function offsetUnset($offset)
+    {
+        // TODO: Implement offsetUnset() method.
     }
 }

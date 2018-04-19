@@ -42,7 +42,7 @@ class SKEntityRepository extends TranslatableRepository
             }
             
         }
-                
+        
         return $qb;
     }
     
