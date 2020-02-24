@@ -141,11 +141,12 @@ class MenuUtils
             $repo = $this->em->getRepository($menu->getEntityClass());
 //            $repo->setDefaultLocale($this->locale);
             $targetEntity = $repo->find($menu->getEntityId(),$this->locale);
-            $targetEntity->setTranslatableLocale($this->locale);
-            $this->em->refresh($targetEntity);
+
             
             if (null !== $targetEntity)
             {
+                $targetEntity->setTranslatableLocale($this->locale);
+                $this->em->refresh($targetEntity);
 //                 //dump($router->generate('skcms_front_page_multilingue', ['id'=>$targetEntity->getId(),'slug'=>$targetEntity->getSlug(),'_locale'=>$this->locale]));    
 //                 //dump($targetEntity->getSlug());
                 
