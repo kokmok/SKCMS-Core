@@ -316,7 +316,7 @@ class SKImage implements \ArrayAccess
     
     protected function optimalExistsAndOk()
     {
-        if (null === $this->optimalPicture)
+        if (null === $this->optimalPicture || basename($this->optimalPicture) !== basename($this->picture))
         {
             return false;
         }
